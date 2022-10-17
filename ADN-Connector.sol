@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: MIT
 // File: @openzeppelin/contracts@4.7.3/utils/Context.sol
 
@@ -196,6 +195,12 @@ contract AiDreamNetworkConnector is Ownable {
         return MinerToResults[user][index];
     }
     mapping(uint => address) public ResultToMiner;//Check Owner of result
+
+    mapping(uint => uint) public ResultToNFT;
+    mapping(uint => uint) public NFTToResult;
+    function nftToTask(uint tokenId) public view returns(uint){
+        return ResultToTask[NFTToResult[tokenId]];
+    }
 
     constructor() {
         FINANCE_VAULT = _msgSender();

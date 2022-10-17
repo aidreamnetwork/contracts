@@ -3,7 +3,7 @@
 ## Ai Dream Network Connector
 
 - [Source](ADN-Connector.sol)
-- Testnet: [0xb94E46a3C7C662CDAF4E62549CACD5ccb61Afed7](https://baobab.scope.klaytn.com/account/0xb94E46a3C7C662CDAF4E62549CACD5ccb61Afed7?tabId%3DcontractCode)
+- Testnet: [0x26ceEd693435Eac3303350517AC9CcAbdE4946B9](https://baobab.scope.klaytn.com/account/0x26ceEd693435Eac3303350517AC9CcAbdE4946B9?tabId%3DcontractCode)
 
 ## Ai Dream Network Token (ADN)
 
