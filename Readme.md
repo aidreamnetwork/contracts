@@ -3,7 +3,7 @@
 ## Ai Dream Network Connector
 
 - [Source](ADN-Connector.sol)
-- Testnet: [0x26ceEd693435Eac3303350517AC9CcAbdE4946B9](https://baobab.scope.klaytn.com/account/0x26ceEd693435Eac3303350517AC9CcAbdE4946B9?tabId%3DcontractCode)
+- Testnet: [0x6F3a0AB32ACEf8D62EC55735F63AaD1f8998Da6e](https://baobab.scope.klaytn.com/account/0x6F3a0AB32ACEf8D62EC55735F63AaD1f8998Da6e?tabId%3DcontractCode)
 
 ## Ai Dream Network Token (ADN)
 
@@ -19,3 +19,9 @@
 
 - [Source](ADN-NameService.sol)
 - Testnet: [0x54a4Df02A08C9975c07bF94695aCDA793183d71a](https://baobab.scope.klaytn.com/account/0x54a4df02a08c9975c07bf94695acda793183d71a?tabId%3DinternalTx)
+
+
+### Ai Dream Network Helper
+
+- [Source](ADN-Helper.sol)
+- Testnet: [0x77AEd7990077e79b6365459BE84ca056638EDE52](https://baobab.scope.klaytn.com/account/0x77AEd7990077e79b6365459BE84ca056638EDE52?tabId%3DinternalTx)

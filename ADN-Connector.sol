@@ -234,6 +234,8 @@ contract AiDreamNetworkConnector is Ownable {
         ADN = IADN(newAddress);
     }
 
+    event StartTask(address indexed from, uint indexed taskId, string prompt, uint reward, uint promptTime);
+
     function startTask(string memory _prompt) public payable {
         require(msg.value >= MIN_PROMPT_PRICE, "Reward must be greater than min price");
         taskCount++; 
@@ -248,10 +250,15 @@ contract AiDreamNetworkConnector is Ownable {
         //Relate User -> task (1-n),  task -> user (1-1)
         UserToTasks[_msgSender()].push(taskCount);
         TaskToUser[taskCount] = _msgSender();
+
+        emit StartTask(_msgSender(), taskCount, _prompt, msg.value, block.timestamp);
     }
+
+    event PostTask(address indexed from, uint indexed taskId, uint indexed resultId, string result, uint postTime);
 
     function postTask(uint taskId,string memory  _cidResult) public {
         require(TaskToResults[taskId].length < LIMIT_MINER, "Task results is enough, let quickly later"); 
+        require(block.timestamp - Tasks[taskId].promptTime <= TTL_TASK, "Passing TTL of Task");
         require(Tasks[taskId].confirmTime == 0, "Task must be not confirm");
         require(ADN.balanceOf(_msgSender()) >= MINER_MIN_ADN_BALANCE, "Miner must hold ADN to become miner");
         resultCount++;
@@ -265,7 +272,11 @@ contract AiDreamNetworkConnector is Ownable {
         //Relate Miner -> result (1-n),  result -> miner (1-1)
         MinerToResults[_msgSender()].push(resultCount);
         ResultToMiner[resultCount] = _msgSender();
+
+        emit PostTask(_msgSender(), taskId, resultCount, _cidResult, block.timestamp);
     }
+
+    event PickResult(address indexed sender, uint indexed taskId, uint indexed resultId, uint pickTime);
 
     function pickResult(uint taskId, uint resultId) public payable {
         require(Tasks[taskId].confirmTime == 0, "Task must be not confirm");
@@ -281,7 +292,9 @@ contract AiDreamNetworkConnector is Ownable {
         uint tax = Tasks[taskId].reward * TAX_PER_1000 / 1000;
         payable(FINANCE_VAULT).transfer(tax);
         //Send Rest To Miner as Reward
-        payable(ResultToMiner[resultId]).transfer(tax);
+        payable(ResultToMiner[resultId]).transfer(Tasks[taskId].reward - tax);
+
+        emit PickResult(_msgSender(), taskId, resultId, block.timestamp);
     }
 
     //Dev: Incase creator (user) not pickResult? => then any one can finalize task after TTL_TASK (default 15 minutes). 
@@ -289,6 +302,8 @@ contract AiDreamNetworkConnector is Ownable {
     //==> Incase have least 1 miner. 
     //=> task reward will split = tax + rest
     //=> rest split 2 part: 50% dividen for miners has been posted result, 50% return creators
+
+    event FinallyTask(address indexed caller, uint indexed taskId,  uint finallyTime);
 
     function finalizeTask(uint taskId) public payable{
         require(block.timestamp - Tasks[taskId].promptTime > TTL_TASK, "Not passing TTL of Task");
@@ -306,5 +321,7 @@ contract AiDreamNetworkConnector is Ownable {
             }
             payable(TaskToUser[taskId]).transfer(Tasks[taskId].reward  - tax - minerReward * TaskToResults[taskId].length);
         }
+
+        emit FinallyTask(_msgSender(), taskId, block.timestamp);
     }
 }
