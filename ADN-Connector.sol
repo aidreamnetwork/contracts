@@ -122,7 +122,7 @@ interface IADN {
 }
 
 interface IADNFT {
-    function safeMint(address to, string memory uri) external;
+    function safeMint(address to, string memory uri) external returns (uint);
 
     function balanceOf(address _owner) external view returns (uint256 _balance);
 
@@ -257,6 +257,7 @@ contract AiDreamNetworkConnector is Ownable {
     event PostTask(address indexed from, uint indexed taskId, uint indexed resultId, string result, uint postTime);
 
     function postTask(uint taskId,string memory  _cidResult) public {
+        //TODO: Not allow Miner send duplicate => Prevent send fake result. 
         require(TaskToResults[taskId].length < LIMIT_MINER, "Task results is enough, let quickly later"); 
         require(block.timestamp - Tasks[taskId].promptTime <= TTL_TASK, "Passing TTL of Task");
         require(Tasks[taskId].confirmTime == 0, "Task must be not confirm");
@@ -287,12 +288,14 @@ contract AiDreamNetworkConnector is Ownable {
         Tasks[taskId].confirmTime = block.timestamp;
         Tasks[taskId].resultPicked = resultId;
         //Mint new NFT with CID
-        ADNFT.safeMint(_msgSender(), Results[resultId].result);
+        uint tokenId =  ADNFT.safeMint(_msgSender(), Results[resultId].result);
+        NFTToResult[tokenId] = resultId;
+        ResultToNFT[resultId] = tokenId;
         //Pick tax
         uint tax = Tasks[taskId].reward * TAX_PER_1000 / 1000;
         payable(FINANCE_VAULT).transfer(tax);
         //Send Rest To Miner as Reward
-        payable(ResultToMiner[resultId]).transfer(Tasks[taskId].reward - tax);
+        payable(ResultToMiner[resultId]).transfer(Tasks[taskId].reward-tax);
 
         emit PickResult(_msgSender(), taskId, resultId, block.timestamp);
     }

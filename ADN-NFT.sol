@@ -1664,11 +1664,12 @@ contract AiDreamNetworkNFT is ERC721, ERC721Enumerable, AccessControl {
 
     mapping(uint => string) public tokenDataCID; 
 
-    function safeMint(address to, string memory cid) public onlyRole(MINTER_ROLE) {
+    function safeMint(address to, string memory cid) public onlyRole(MINTER_ROLE) returns (uint){
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
         tokenDataCID[tokenId] = cid;
+        return tokenId;
     }
 
     function _burn(uint256 tokenId) internal override {
